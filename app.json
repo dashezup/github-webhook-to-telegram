@@ -1,0 +1,17 @@
+{
+  "env": {
+    "BOT_TOKEN": {
+      "description": "get bot token from @BotFather"
+    },
+    "GH_WEBHOOKS": {
+      "description": "check README"
+    }
+
+  },
+  "formation": {
+    "worker": {
+      "quantity": 1,
+      "size": "free"
+    }
+  }
+}
