@@ -15,6 +15,10 @@ conflicts.
 3. Format and send the text to a Telegram chat through "sendMessage" method of
    Telegram Bot API (`GET` request)
 
+### Heroku
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/dashezup/github-webhook-to-telegram)
+
 ### Setup
 
 You need a Telegram bot token, create a Telegram bot with

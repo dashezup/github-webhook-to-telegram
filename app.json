@@ -1,0 +1,20 @@
+{
+  "name": "GitHub Webhook to Telegram",
+  "description": "Receive GitHub webhook events and send to Telegram chats with AIOHTTP through Telegram Bot API",
+  "repository": "https://github.com/dashezup/github-webhook-to-telegram",
+  "keywords": [
+    "github",
+    "webhooks",
+    "telegram",
+    "aiohttp",
+    "python",
+    "telegram-bot",
+    "telegram-bot-api"
+  ],
+  "env": {
+    "HOOK_CONFIG": {
+      "description": "configuration in JSON format, check README and config_sample.json",
+      "required": true
+    }
+  }
+}
