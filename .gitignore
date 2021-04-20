@@ -1,0 +1,12 @@
+# Python
+__pycache__/
+/venv/
+
+# Vim
+[._]*.sw[a-p]
+
+# Pycharm
+/.idea/
+
+# Configuration
+/config.py
