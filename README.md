@@ -5,14 +5,14 @@ with [AIOHTTP](https://github.com/aio-libs/aiohttp)
 through [Telegram Bot API](https://core.telegram.org/bots/api#sendmessage)
 
 What this project do is very simple, it does not use any Telegram Bot API
-framework/library nor receive updates from Telegram, but calling `SendMessage`
+framework/library nor receive updates from Telegram, but calling `sendMessage`
 method of Telegram Bot API directly by sending `GET` requests through AIOHTTP.
 It should be able to be used along with any existing Telegram bot without
 conflicts.
 
 1. Receive GitHub webhooks (`POST` request)
 2. Verify the SHA256 signature
-3. Format and send the text to a Telegram chat through "SendMessage" method of
+3. Format and send the text to a Telegram chat through "sendMessage" method of
    Telegram Bot API (`GET` request)
 
 ### Setup

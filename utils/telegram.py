@@ -52,7 +52,8 @@ async def send_message(session: ClientSession,
         chat_id=chat_id,
         text=text,
         parse_mode='HTML',
-        disable_web_page_preview=True
+        disable_web_page_preview=True,
+        disable_notification=True
     )
     async with session.post(api_url,
                             data=data) as resp:  # type: ClientResponse
