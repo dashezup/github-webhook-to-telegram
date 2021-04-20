@@ -62,4 +62,4 @@ if __name__ == "__main__":
     app = web.Application()
     app.add_routes(routes)
     app.on_shutdown.append(on_shutdown)
-    web.run_app(app, port=PORT)
+    web.run_app(app, HOST="0.0.0.0", port=PORT)
