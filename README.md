@@ -25,24 +25,9 @@ You need a Telegram bot token, create a Telegram bot with
 1. Go to your GitHub project `Settings - Webhooks - Add webhook`, fill "Payload
    URL", "Content Type" (must be `application/json`) and "Secret". You can also
    do this after start running the project.
-2. Create a new `config.py` file based on this template. `chat_id` can be
-   user/group/channel id (integer) or username (string), just make sure the bot
-   is started or member of the chat with permission to send messages
-   ```
-   BOT_TOKEN = "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11"
-   PORT = 12345
-
-   GH_WEBHOOKS = {
-       "Codertocat/Hello-World": {
-           "chat_id": -1001234567890,
-           "secret": "FPAh9pwRHCLpRL7j"
-       },
-       "Octocoders/Hello-World": {
-           "chat_id": "@username",
-           "secret": "H4xvfPNCnUhPTERq"
-       }
-   }
-   ```
+2. Copy `config_sample.json` to `config.json` to configure it. `chat_id` can be
+   user/group/channel id (integer) or username (string), make sure the bot is
+   `/start`ed or member of the chat with permission to send messages
 3. Configure reverse proxy for this app, corresponding configuration for Nginx
    looks like this
    ```

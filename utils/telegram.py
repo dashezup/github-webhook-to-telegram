@@ -24,24 +24,20 @@ from typing import Union
 from aiohttp import ClientSession, ClientResponse
 from aiohttp.web_request import Request
 
-from config import BOT_TOKEN, GH_WEBHOOKS
+from config import BOT_TOKEN
 from utils.github_webhook import format_github_webhook
 
 
-async def send_to_telegram(session: ClientSession, request: Request) -> str:
+async def send_to_telegram(session: ClientSession,
+                           chat_id: Union[str, int],
+                           request: Request) -> str:
     message_text: Optional[str] = await format_github_webhook(request)
-    chat_id: int = await get_corresponding_chat_id(await request.json())
     if not message_text:
         tg_status = "nothing to send"
     else:
         tg_succeed: bool = await send_message(session, chat_id, message_text)
         tg_status: str = f"{'succeed' if tg_succeed else 'failed'}"
     return tg_status
-
-
-async def get_corresponding_chat_id(payload: dict) -> int:
-    repo_name = payload['repository']['full_name']
-    return GH_WEBHOOKS[repo_name]['chat_id']
 
 
 async def send_message(session: ClientSession,

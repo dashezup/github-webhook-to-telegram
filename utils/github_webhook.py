@@ -22,6 +22,7 @@ import logging
 from hashlib import sha256
 from json.decoder import JSONDecodeError
 from typing import Optional
+from typing import Union
 
 from aiohttp.web_request import Request
 from multidict import CIMultiDictProxy
@@ -29,7 +30,7 @@ from multidict import CIMultiDictProxy
 from config import GH_WEBHOOKS
 
 
-async def validate_github_webhook(request: Request) -> bool:
+async def validate_github_webhook(request: Request) -> Union[str, int, bool]:
     try:
         headers = request.headers
         if not headers.get('User-Agent').startswith('GitHub-Hookshot'):
@@ -39,18 +40,33 @@ async def validate_github_webhook(request: Request) -> bool:
             logging.warning("Content type: not json")
             return False
         payload = await request.json()
-        repo_name = payload['repository']['full_name']
-        if repo_name not in GH_WEBHOOKS.keys():
-            logging.warning("Repository: not in configuration")
+        hook_target: Optional[dict] = await _get_hook_target(payload)
+        if not hook_target:
             return False
-        return await _verify_signature(
-            bytes(GH_WEBHOOKS[repo_name]['secret'], 'UTF-8'),
+        valid_signature = await _verify_signature(
+            bytes(hook_target['secret'], 'UTF-8'),
             headers.get('X-Hub-Signature-256').split('=')[1],
             await request.read()
         )
+        if valid_signature:
+            return hook_target['chat_id']
+        else:
+            return False
     except (JSONDecodeError, AttributeError) as error:
         logging.warning("Invalid: %s", error)
         return False
+
+
+async def _get_hook_target(payload: dict) -> Optional[dict]:
+    name = (payload.get('organization', {}).get('login')
+            or payload.get('repository', {}).get('full_name'))
+    if not name:
+        logging.warning("no repo or organization found")
+        return None
+    target = GH_WEBHOOKS.get(name, None)
+    if not target:
+        logging.warning("unknown repo or organization")
+    return target
 
 
 async def _verify_signature(secret: bytes, sig: str, msg: bytes) -> bool:
@@ -96,10 +112,11 @@ async def _format_discussion(payload: dict) -> str:
 
 async def _format_fork(payload: dict) -> str:
     forkee = payload['forkee']
-    return "\u2192 <a href=\"{url}\">{name}</a>".format(
+    text = ["\u2192 <a href=\"{url}\">{name}</a>".format(
         url=forkee['html_url'],
         name=forkee['full_name']
-    )
+    ), await _get_repo_star_and_fork(payload['repository'])]
+    return "\n".join(text)
 
 
 async def _format_issues(payload: dict) -> str:
@@ -153,26 +170,24 @@ async def _format_push(payload: dict) -> str:
 async def _format_star(payload: dict) -> str:
     time = payload['starred_at']
     text = [f"\u2192 starred at <code>{time}</code>"] if time else []
-    text.append(await _get_repo_watch_star_fork(payload['repository']))
+    text.append(await _get_repo_star_and_fork(payload['repository']))
     return "\n".join(text)
 
 
-async def _format_watch(payload: dict) -> str:
-    return await _get_repo_watch_star_fork(payload['repository'])
-
-
 async def _get_event_title(event: str, payload: dict) -> str:
-    sender = payload['sender']['login']
-    action = payload.get('action') or ''
+    summary = [payload['sender']['login']]
+    # if action := payload.get('action'): summary.append(action)
+    action = payload.get('action')
+    summary.append(action) if action else []
+    summary.append(event)
     return "<b>{name}</b> | <i>{summary}</i>".format(
         name=payload['repository']['full_name'],
-        summary=" ".join([sender, action, event])
+        summary=" ".join(summary)
     )
 
 
-async def _get_repo_watch_star_fork(repo: dict) -> str:
+async def _get_repo_star_and_fork(repo: dict) -> str:
     return '\u2192 ' + ", ".join([
-        f"<b>{repo['watchers_count']}</b> watchers",
         f"<b>{repo['stargazers_count']}</b> stargazers",
         f"<b>{repo['forks_count']}</b> forks"
     ])

@@ -18,6 +18,7 @@
 
 """
 import asyncio
+from typing import Union
 
 from aiohttp import web, ClientSession
 from aiohttp.web_request import Request
@@ -39,10 +40,10 @@ async def main(_):
 
 @routes.post("/")
 async def github_webhook_post_handler(request: Request) -> Response:
-    valid_github_webhook = await validate_github_webhook(request)
-    if not valid_github_webhook:
+    tg_chat_id: Union[str, int, bool] = await validate_github_webhook(request)
+    if not tg_chat_id:
         return web.Response(status=403, text="403: Forbidden")
-    tg_status = await send_to_telegram(session, request)
+    tg_status = await send_to_telegram(session, tg_chat_id, request)
     return web.Response(text=f"Send to Telegram: {tg_status}")
 
 
