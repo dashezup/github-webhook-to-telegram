@@ -30,8 +30,8 @@ You need a Telegram bot token, create a Telegram bot with
    URL", "Content Type" (must be `application/json`) and "Secret". You can also
    do this after start running the project.
 2. Copy `config_sample.json` to `config.json` to configure it. `chat_id` can be
-   user/group/channel id (integer) or username (string), make sure the bot is
-   `/start`ed or member of the chat with permission to send messages
+   user id or group/channel id/username, make sure the bot is `/start`ed or
+   member of the chat with permission to send messages
 3. Configure reverse proxy for this app, corresponding configuration for Nginx
    looks like this
    ```

@@ -130,12 +130,8 @@ async def _format_issues(payload: dict) -> str:
     )
 
 
-async def _format_ping(payload: dict) -> str:
-    repository = payload['repository']
-    return "\u2192 <a href=\"{url}\">{name}</a>".format(
-        url=repository['html_url'],
-        name=repository['full_name']
-    )
+async def _format_ping(_: dict) -> None:
+    return None
 
 
 async def _format_public(payload: dict) -> str:
@@ -181,15 +177,14 @@ async def _format_star(payload: dict) -> str:
 
 
 async def _get_event_title(event: str, payload: dict) -> str:
+    name = (payload.get('repository', {}).get('full_name')
+            or payload.get('organization', {}).get('login'))
     summary = [payload['sender']['login']]
     # if action := payload.get('action'): summary.append(action)
     action = payload.get('action')
     summary.append(action) if action else []
     summary.append(event)
-    return "<b>{name}</b> | <i>{summary}</i>".format(
-        name=payload['repository']['full_name'],
-        summary=" ".join(summary)
-    )
+    return f"<b>{name}</b> | <i>{' '.join(summary)}</i>"
 
 
 async def _get_repo_star_and_fork(repo: dict) -> str:
