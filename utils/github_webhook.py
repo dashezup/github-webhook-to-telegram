@@ -20,6 +20,7 @@
 import hmac
 import logging
 from hashlib import sha256
+from html import escape
 from json.decoder import JSONDecodeError
 from typing import Optional
 from typing import Union
@@ -105,9 +106,11 @@ async def _format_delete(payload: dict) -> str:
 
 async def _format_discussion(payload: dict) -> str:
     discussion = payload['discussion']
-    url = discussion['html_url']
-    title = f"{discussion['title']} \u00b7 Discussion #{discussion['number']}"
-    return f"\u2192 <a href=\"{url}\">{title}</a>"
+    escaped_title = escape(discussion['title'])
+    return "\u2192 <a href=\"{url}\">{title}</a>".format(
+        url=discussion['html_url'],
+        title=f"{escaped_title} \u00b7 Discussion #{discussion['number']}"
+    )
 
 
 async def _format_fork(payload: dict) -> str:
@@ -123,7 +126,7 @@ async def _format_issues(payload: dict) -> str:
     issue = payload['issue']
     return "\u2192 <a href=\"{url}\">{title}</a>".format(
         url=issue['html_url'],
-        title=f"{issue['title']} \u00b7 Issue #{issue['number']}"
+        title=f"{escape(issue['title'])} \u00b7 Issue #{issue['number']}"
     )
 
 
@@ -146,8 +149,11 @@ async def _format_public(payload: dict) -> str:
 async def _format_pull_request(payload: dict) -> str:
     pr = payload['pull_request']
     url = pr['html_url']
-    user = pr['user']['login']
-    title = f"{pr['title']} by {user} \u00b7 Pull Request #{payload['number']}"
+    title = "{pr_title} by {user} \u00b7 Pull Request #{number}".format(
+        pr_title=escape(pr['title']),
+        user=pr['user']['login'],
+        number=payload['number']
+    )
     return f"\u2192 <a href=\"{url}\">{title}</a>"
 
 
@@ -158,7 +164,7 @@ async def _format_push(payload: dict) -> str:
         "\u2192 "
         "<code>{name}</code> {message} [<a href=\"{url}\">{cid}</a>]".format(
             name=commit['author']['username'],
-            message=commit['message'],
+            message=escape(commit['message']),
             url=commit['url'],
             cid=commit['id'][:7]
         )
