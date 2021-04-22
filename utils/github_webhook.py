@@ -170,10 +170,7 @@ async def _format_push(payload: dict) -> str:
 
 
 async def _format_star(payload: dict) -> str:
-    time = payload['starred_at']
-    text = [f"\u2192 starred at <code>{time}</code>"] if time else []
-    text.append(await _get_repo_star_and_fork(payload['repository']))
-    return "\n".join(text)
+    return await _get_repo_star_and_fork(payload['repository'])
 
 
 async def _get_event_title(event: str, payload: dict) -> str:
