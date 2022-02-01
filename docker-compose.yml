@@ -1,0 +1,7 @@
+version: '3.7'
+
+services:
+  bot:
+    image: dashezup/github-webhook-to-telegram
+    ports:
+      - 12345:12345

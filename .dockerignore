@@ -12,4 +12,4 @@ __pycache__/
 /config.json
 
 # Docker
-docker-compose.override.yml
+docker-compose.*
